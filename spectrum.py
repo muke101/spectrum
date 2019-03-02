@@ -43,6 +43,9 @@ class spectrum():
 			freqs, power = self.FFT()
 			plt.plot(freqs,power)
 			plt.show()
+		freqs, power = self.FFT() #wish Python had a do-while loop lol
+		plt.plot(freqs,power)
+		plt.show()
 
 
 spectrum()
