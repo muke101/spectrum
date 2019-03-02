@@ -37,7 +37,8 @@ class spectrum():
 		power = np.abs(np.fft.fft(self.audioBuffer * win)) #abs calculates the complex magnitude, for some reason
 		freqs = np.fft.fftfreq(self.bufferSize, 1/self.sampleRate)
 		freqs = freqs[:int(len(freqs)/2)] #remove symetric negative frequencies
-		power = power[:int(len(power)/2)]
+		power = power[:int(len(power)/2)] #match up with freq shape for plotting
+		power = 20*np.log10(power/power.max()) #convert to dB
 		return freqs, power
 
 	def plotting(self):
