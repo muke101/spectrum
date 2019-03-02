@@ -1,11 +1,8 @@
 #load in music file, take 1024 samples in array, average channels, calculate FFT, take magnitude, plot, repeat with next buffer with 100 sample overlap
-
-#your graphs are fucky
-
 from scipy.io.wavfile import read
 import numpy as np 
 import matplotlib.pyplot as plt 
-#try and implement as many of these numpy functions yourself as you can tbh
+#TODO: manually implenent as many numpy algorithim functions in C as possible and import with ctypes
 
 class spectrum():
 	def __init__(self): #TODO: see if you can replace the scipy wav read function
@@ -17,7 +14,6 @@ class spectrum():
 		print(len(self.audio))
 		self.audio = np.mean(self.audio, axis=1)[40000:] #average channels
 		self.audioBuffer = np.zeros(1024, dtype=float)
-		self.FFT()
 		self.plotting()
 
 	def fillBuffer(self):
@@ -32,13 +28,14 @@ class spectrum():
 		self.slice+=1
 		return 0
 
-	def FFT(self): #TODO: convert power to dB
+	def FFT(self):
 		win = np.kaiser(self.bufferSize, 7)
 		power = np.abs(np.fft.fft(self.audioBuffer * win)) #abs calculates the complex magnitude, for some reason
 		freqs = np.fft.fftfreq(self.bufferSize, 1/self.sampleRate)
 		freqs = freqs[:int(len(freqs)/2)] #remove symetric negative frequencies
 		power = power[:int(len(power)/2)] #match up with freq shape for plotting
-		power = 20*np.log10(power/power.max()) #convert to dB
+		if power.max() != 0:
+			power = 20*np.log10(power/power.max()) #convert to dB
 		return freqs, power
 
 	def plotting(self):
