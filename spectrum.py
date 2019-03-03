@@ -1,7 +1,7 @@
 #load in music file, take 1024 samples in array, average channels, calculate FFT, take magnitude, plot, repeat with next buffer with 100 sample overlap
 from scipy.io.wavfile import read
 import numpy as np 
-import matplotlib.pyplot as plt 
+import matplotlib.pyplot as plt
 #TODO: manually implenent as many numpy algorithim functions in C as possible and import with ctypes
 
 class spectrum():
@@ -18,8 +18,8 @@ class spectrum():
 
 	def fillBuffer(self):
 		self.audioBuffer = np.zeros(1024, dtype=float) #flush out buffer
-		frameSize = (self.slice*self.bufferSize)-self.overlap #keep track of how  many frames in each iteration
-		for c, i in enumerate(range(frameSize, frameSize+self.bufferSize)):
+		sliceSize = (self.slice*self.bufferSize)-self.overlap #keep track of how  many frames in each iteration
+		for c, i in enumerate(range(sliceSize, sliceSize+self.bufferSize)):
 			try:
 				self.audioBuffer[c] = self.audio[i]
 			except IndexError: #towards end of audio data, last point probably won't fall on 1024 exactly. Need to break out of loop with whatever data is there
@@ -29,11 +29,11 @@ class spectrum():
 		return 0
 
 	def FFT(self):
-		win = np.kaiser(self.bufferSize, 7)
+		win = np.kaiser(self.bufferSize, 7) #windowing function
 		power = np.abs(np.fft.fft(self.audioBuffer * win)) #abs calculates the complex magnitude, for some reason
 		freqs = np.fft.fftfreq(self.bufferSize, 1/self.sampleRate)
-		freqs = freqs[:int(len(freqs)/2)] #remove symetric negative frequencies
-		power = power[:int(len(power)/2)] #match up with freq shape for plotting
+		freqs = freqs[:int(len(freqs)/2)] #slice out symetric negative frequencies
+		power = power[:int(len(power)/2)] #slice out corrosponding powers
 		if power.max() != 0:
 			power = 20*np.log10(power/power.max()) #convert to dB
 		return freqs, power
@@ -46,6 +46,3 @@ class spectrum():
 		freqs, power = self.FFT() #wish Python had a do-while loop lol
 		plt.plot(freqs,power)
 		plt.show()
-
-
-spectrum()
