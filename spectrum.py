@@ -1,3 +1,5 @@
+#! /usr/bin/python
+
 #load in music file, take 1024 samples in array, average channels, calculate FFT, take magnitude, plot, repeat with next buffer with 100 sample overlap
 from scipy.io.wavfile import read
 import numpy as np 
